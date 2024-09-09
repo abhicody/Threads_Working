@@ -8,6 +8,87 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 
+// export async function editMainThread(
+//   commentId: string,
+//   newCommentText: string,
+//   path: string
+// ) {
+//   connectToDB();
+
+//   try {
+//     // Find the original thread by its ID
+//     const originalThread = await Thread.findById(threadId);
+//     // Find the comment by its ID
+//     const commentThread = await Thread.findById(commentId);
+
+//     if (!commentThread) {
+//       throw new Error("Comment not found");
+//     }
+
+//     // Update the comment text
+//     commentThread.text = newCommentText;
+
+//     // Save the updated comment to the database
+//     const updatedCommentThread = await commentThread.save();
+
+//     revalidatePath(path);
+//   } catch (err) {
+//     console.error("Error while editing comment:", err);
+//     throw new Error("Unable to edit comment");
+//   }
+// }
+
+export async function addOrEditComment(
+  threadId: string,
+  commentText: string,
+  userId: string,
+  path: string
+) {
+  connectToDB();
+
+  try {
+    // Find the original thread by its ID
+    const originalThread = await Thread.findById(threadId);
+
+    if (!originalThread) {
+      throw new Error("Thread not found");
+    }
+
+    let savedCommentThread;
+
+    if (threadId) {
+      // Edit existing comment
+      const existingComment = await Thread.findById(threadId);
+
+      if (!existingComment) {
+        throw new Error("Comment not found");
+      }
+
+      existingComment.text = commentText;
+      savedCommentThread = await existingComment.save();
+    } else {
+      // Create the new comment thread
+      const commentThread = new Thread({
+        text: commentText,
+        author: userId,
+        parentId: threadId, // Set the parentId to the original thread's ID
+      });
+
+      // Save the comment thread to the database
+      savedCommentThread = await commentThread.save();
+
+      // Add the comment thread's ID to the original thread's children array
+      originalThread.children.push(savedCommentThread._id);
+      await originalThread.save();
+    }
+
+    revalidatePath(path);
+  } catch (err) {
+    console.error("Error while adding or editing comment:", err);
+    throw new Error("Unable to add or edit comment");
+  }
+}
+
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
 
@@ -49,14 +130,18 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
 }
 
 interface Params {
-  text: string,
-  author: string,
-  communityId: string | null,
-  path: string,
+  text: string;
+  author: string;
+  communityId: string | null;
+  path: string;
 }
 
-export async function createThread({ text, author, communityId, path }: Params
-) {
+export async function createThread({
+  text,
+  author,
+  communityId,
+  path,
+}: Params) {
   try {
     connectToDB();
 

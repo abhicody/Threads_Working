@@ -18,7 +18,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 import { CommentValidation } from "@/lib/validations/thread";
-import { addCommentToThread } from "@/lib/actions/thread.actions";
+import { addOrEditComment } from "@/lib/actions/thread.actions";
 
 interface Props {
   threadId: string;
@@ -26,7 +26,7 @@ interface Props {
   currentUserId: string;
 }
 
-function Comment({ threadId, currentUserImg, currentUserId }: Props) {
+function RepostComment({ threadId, currentUserImg, currentUserId }: Props) {
   const pathname = usePathname();
 
   const form = useForm<z.infer<typeof CommentValidation>>({
@@ -37,7 +37,7 @@ function Comment({ threadId, currentUserImg, currentUserId }: Props) {
   });
 
   const onSubmit = async (values: z.infer<typeof CommentValidation>) => {
-    await addCommentToThread(
+    await addOrEditComment(
       threadId,
       values.thread,
       JSON.parse(currentUserId),
@@ -77,11 +77,11 @@ function Comment({ threadId, currentUserImg, currentUserId }: Props) {
         />
 
         <Button type="submit" className="comment-form_btn">
-          Reply
+          Save
         </Button>
       </form>
     </Form>
   );
 }
 
-export default Comment;
+export default RepostComment;

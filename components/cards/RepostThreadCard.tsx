@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
-import ButtonClick from "../ui2/ButtonClick";
 import ShareButtons from "../ui2/ShareButton";
 
 interface Props {
@@ -30,7 +29,7 @@ interface Props {
   isComment?: boolean;
 }
 
-function ThreadCard({
+function RepostThreadCard({
   id,
   currentUserId,
   parentId,
@@ -61,7 +60,6 @@ function ThreadCard({
 
             <div className="thread-card_bar" />
           </div>
-
           <div className="flex w-full flex-col">
             <Link href={`/profile/${author.id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
@@ -72,46 +70,6 @@ function ThreadCard({
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
-              <div className="flex gap-3.5">
-                <ButtonClick>
-                  <Image
-                    src="/assets/heart-gray.svg"
-                    alt="heart"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
-                  />
-                </ButtonClick>
-
-                <Link href={`/thread/${id}`}>
-                  <Image
-                    src="/assets/reply.svg"
-                    alt="heart"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
-                  />
-                </Link>
-                <Link href={`/repost/${id}`}>
-                  <Image
-                    src="/assets/repost.svg"
-                    alt="heart"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
-                  />
-                </Link>
-                {/* <Image
-                  src="/assets/share.svg"
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                /> */}
-
-                <ShareButtons />
-              </div>
-
               {isComment && comments.length > 0 && (
                 <Link href={`/thread/${id}`}>
                   <p className="mt-1 text-subtle-medium text-gray-1">
@@ -176,4 +134,4 @@ function ThreadCard({
   );
 }
 
-export default ThreadCard;
+export default RepostThreadCard;
